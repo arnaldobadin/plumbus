@@ -9,9 +9,34 @@ const Queue = function() {
 	this.size = 0;
 }
 
+Queue.prototype.getSize = function() {return this.size;}
+Queue.prototype.getHead = function() {return this.head;}
+Queue.prototype.getTail = function() {return this.tail;}
+
 Queue.prototype.isEmpty = function() {
 	if (this.size) return false;
 	return true;
+}
+
+Queue.prototype.look = function(index = 0) {
+	if (this.isEmpty()) return false;
+	if (index < 0 || index > (this.size - 1)) return false;
+
+	let count = 0;
+	let node;
+	
+	while (count <= index) {
+		if (!node) node = this.head;
+		else node = node.next;
+
+		if (!node) {
+			return false;
+		}
+
+		count++;
+	}
+
+	return node;
 }
 
 Queue.prototype.push = function(data) {
