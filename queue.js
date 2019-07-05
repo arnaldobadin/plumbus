@@ -18,6 +18,36 @@ Queue.prototype.isEmpty = function() {
 	return true;
 }
 
+Queue.prototype.check = function(operator) {
+	if (this.isEmpty()) return false;
+	if (!(operator && typeof(operator) == "function")) {
+		return false;
+	}
+
+	let count = 0;
+	let node;
+	
+	while (count <= this.size) {
+		if (!node) node = this.head;
+		else node = node.next;
+
+		if (!node) {
+			return false;
+		}
+
+		let data = node.data;
+		if (!data) continue;
+
+		if (operator(data)) {
+			return node;
+		}
+
+		count++;
+	}
+
+	return false;
+}
+
 Queue.prototype.look = function(index = 0) {
 	if (this.isEmpty()) return false;
 	if (index < 0 || index > (this.size - 1)) return false;
