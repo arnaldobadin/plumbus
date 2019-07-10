@@ -50,7 +50,7 @@ Queue.prototype.check = function(operator) {
 		if (!data) continue;
 
 		if (operator(data, count)) {
-			return node;
+			return true;
 		}
 
 		count++;
@@ -152,6 +152,37 @@ Queue.prototype.delete = function(index) {
 
 	this.size--;
 	return true;
+}
+
+Queue.prototype.filter = function(operator) {
+	if (this.isEmpty()) return false;
+	if (!(operator && typeof(operator) == "function")) {
+		return false;
+	}
+
+	let count = 0;
+	let node;
+	
+	while (count <= this.size) {
+		if (!node) node = this.head;
+		else node = node.next;
+
+		if (!node) {
+			return false;
+		}
+
+		let data = node.data;
+		if (!data) continue;
+
+		if (operator(data, count)) {
+			this.delete(count);
+			continue;
+		}
+
+		count++;
+	}
+
+	return false;
 }
 
 module.exports = Queue;
