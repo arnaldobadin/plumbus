@@ -18,6 +18,17 @@ Queue.prototype.isEmpty = function() {
 	return true;
 }
 
+Queue.prototype.clear = function() {
+	if (this.isEmpty()) {
+		return false;
+	}
+	
+	this.head = null;
+	this.tail = null;
+	this.size = 0;
+	return true;
+}
+
 Queue.prototype.check = function(operator) {
 	if (this.isEmpty()) return false;
 	if (!(operator && typeof(operator) == "function")) {
@@ -38,7 +49,7 @@ Queue.prototype.check = function(operator) {
 		let data = node.data;
 		if (!data) continue;
 
-		if (operator(data)) {
+		if (operator(data, count)) {
 			return node;
 		}
 
@@ -112,6 +123,35 @@ Queue.prototype.display = function() {
 	}
 
 	return result;
+}
+
+Queue.prototype.delete = function(index) {
+	if (!(index != null && typeof(index) == "number" && index >= 0)) {
+		return false;
+	}
+	if (index >= this.size) return false;
+	if (this.isEmpty()) return false;
+
+	if (index == 0) {
+		this.head = this.head.next;
+		this.size--;
+		return true;
+	}
+
+	let node;
+
+	for (let i = 0; i < index; i++) {
+		if (!node) node = this.head;
+		else node = node.next;
+	}
+
+	let next = node.next;
+
+	if (!next) node.next = null;
+	else node.next = next.next;
+
+	this.size--;
+	return true;
 }
 
 module.exports = Queue;
