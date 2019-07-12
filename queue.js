@@ -135,6 +135,11 @@ Queue.prototype.delete = function(index) {
 	if (index == 0) {
 		this.head = this.head.next;
 		this.size--;
+		if (this.size == 1) this.tail = this.head;
+		else if (this.isEmpty()) {
+			this.head = null;
+			this.tail = null;
+		}
 		return true;
 	}
 
@@ -149,6 +154,10 @@ Queue.prototype.delete = function(index) {
 
 	if (!next) node.next = null;
 	else node.next = next.next;
+
+	if ((index + 1) == this.size) {
+		this.tail = node;
+	}
 
 	this.size--;
 	return true;
