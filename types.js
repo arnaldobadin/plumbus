@@ -46,6 +46,12 @@ Types.isPort = function(value) {
 	return true;
 }
 
+Types.isBool = function(value) {
+	if (!Types.isType(value, Types.NUMBER)) return false;
+	if (!(value == 0 || value == 1)) return false;
+	return true;
+}
+
 Types.isComplete = function(object, keys) {
 	if (Types.getType(object) != Types.OBJECT || !(Types.getType(keys) == Types.ARRAY && keys.length)) {
 		return false;
