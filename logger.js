@@ -2,7 +2,7 @@ const fs = require("fs");
 const moment = require("moment");
 
 const Logger = function(path = "./", file = "default", extension = ".txt") {
-	this.path = path;
+	this.path = __dirname + path;
 	this.file = file;
 	this.extension = extension;
 	this.time = moment();
@@ -22,6 +22,7 @@ Logger.COLORS = {
 Logger.LOGTYPES = {
 	info : {symbol : "^", color : Logger.COLORS.fgwhite},
 	warning : {symbol : "!", color : Logger.COLORS.fgyellow},
+	event : {symbol : "#", color : Logger.COLORS.fgyellow},
 	debug : {symbol : "$", color : Logger.COLORS.fgred},
 	in : {symbol : ">", color : Logger.COLORS.fgcyan},
 	out : {symbol : "<", color : Logger.COLORS.fgmagenta},
