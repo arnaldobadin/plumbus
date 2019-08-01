@@ -9,7 +9,7 @@ Chest.prototype.set = function(path, value) {
 
 Chest.prototype.get = function(path) {
 	if (!path) return false;
-	return this.data[path];
+	return this.data[path] || false;
 }
 
 Chest.prototype.unpack = function() {
