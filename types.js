@@ -36,18 +36,21 @@ Types.isValid = function(value) {
 
 Types.isInteger = function(value) {
 	if (!Types.isType(value, Types.NUMBER)) return false;
+	if (isNaN(value)) return false;
 	if (value < 0) return false;
 	return true;
 }
 
 Types.isPort = function(value) {
 	if (!Types.isType(value, Types.NUMBER)) return false;
+	if (isNaN(value)) return false;
 	if (value < 0 || value > 65535) return false;
 	return true;
 }
 
 Types.isBool = function(value) {
 	if (!Types.isType(value, Types.NUMBER)) return false;
+	if (isNaN(value)) return false;
 	if (!(value == 0 || value == 1)) return false;
 	return true;
 }
