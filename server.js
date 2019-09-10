@@ -8,27 +8,13 @@ const Server = function(port) {
 
 	this.port = port;
 	this.server = express();
-	this.server.use(/\/((?!raw-input).)*/, express.json());
+	this.server.use(/^(?!\/raw-).*/, express.json());
 	this.server.use(helmet());
 
 	this.status = false;
 }
 
-Server.METHODS = {GET : "GET", POST : "POST"};
-
-Server.LAYOUTS = {
-	ERROR : (code, message) => {
-		const payload = {status : false, error : {}};
-		if (code) payload.error.code = code;
-		if (message) payload.error.message = message;
-		return payload;
-	},
-	SUCCESS : (message) => {
-		const payload = {status : true};
-		if (message) payload.message = message;
-		return payload;
-	}
-};
+Server.METHOD = {GET : "GET", POST : "POST"};
 
 Server.prototype.start = function(callback) {
 	callback = callback || (() => {});
@@ -54,7 +40,7 @@ Server.prototype.stop = function(callback) {
 	return true;
 }
 
-Server.prototype.setRoute = function(method, path, callback) {
+Server.prototype.route = function(method, path, callback) {
 	if (!(method && typeof(method) == "string" && method.length)) {
 		return false;
 	}
@@ -68,11 +54,12 @@ Server.prototype.setRoute = function(method, path, callback) {
 	}
 
 	switch (method) {
-		case Server.METHODS.GET:
+		case Server.METHOD.GET:
 			this.server.get(path, callback);
 			break;
-		case Server.METHODS.POST:
+		case Server.METHOD.POST:
 			this.server.post(path, callback);
+			break;
 		default:
 			return false;
 	}
