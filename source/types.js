@@ -1,4 +1,4 @@
-const Types = function() {}
+const Types = {};
 
 Types.NUMBER = "number";
 Types.STRING = "string";

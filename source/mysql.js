@@ -6,44 +6,44 @@ const Mysql = function(host, user, password) {
 	if (!(user && typeof(user) == "string" && user.length)) throw new Error("Missing user on Mysql::Constructor.");
 	if (!(password && typeof(password) == "string" && password.length)) throw new Error("Missing password on Mysql::Constructor.");
 
-	this.config = {host, user, password, multipleStatements : true};
-	this.pool = null;
+	this._config = {host, user, password, multipleStatements : true};
+	this._pool = null;
 
-	this.status = false;
+	this._status = false;
 }
 
 Mysql.prototype.open = function(database, callback) {
 	callback = callback || (() => {});
 
-	if (this.status) return callback("Can't open another pool.", null);
-	this.status = true;
+	if (this._status) return callback("Can't open another pool.", null);
+	this._status = true;
 
 	if (!(database && typeof(database) == "string" && database.length)) {
 		return callback("Invalid or missing database.", null);
 	}
 
-	this.config.database = database;
-	this.config.connectionLimit = 99;
+	this._config.database = database;
+	this._config.connectionLimit = 99;
 
-	this.pool = mysql.createPool(this.config);
-	return callback(null, true);
+	this._pool = mysql.createPool(this._config);
+	return callback(null, "Pool created with success.");
 }
 
 Mysql.prototype.close = function(callback) {
 	callback = callback || (() => {});
 
-	if (!(this.status)) return callback("Can't close an empty pool.", null);;
-	this.status = false;
+	if (!(this._status)) return callback("Can't close an empty pool.", null);;
+	this._status = false;
 
-	this.config = null;
-	this.pool.end();
-	return callback(null, true);
+	this._config = null;
+	this._pool.end();
+	return callback(null, "Pool closed with success.");
 }
 
 Mysql.prototype.schema = function(path, callback) {
 	callback = callback || (() => {});
 
-	if (this.status) return callback("Too late to create schema.", null);
+	if (this._status) return callback("Too late to create schema.", null);
 	if (!(path && typeof(path) == "string" && path.length)) {
 		return callback("Missing path.", null);
 	}
@@ -54,7 +54,7 @@ Mysql.prototype.schema = function(path, callback) {
 		return callback("Missing schema.", null);
 	}
 
-	let connection = mysql.createConnection(this.config);
+	let connection = mysql.createConnection(this._config);
 	if (!connection) return callback("Missing connection.", null);
 
 	return connection.connect(
@@ -74,10 +74,10 @@ Mysql.prototype.schema = function(path, callback) {
 Mysql.prototype.query = function(query, callback) {
 	callback = callback || (() => {});
 
-	if (!this.status) return callback("Can't query an empty pool.", null);
+	if (!this._status) return callback("Can't query an empty pool.", null);
 	if (!query) return callback("Missing query.", null);
 
-	return this.pool.getConnection(
+	return this._pool.getConnection(
 		(error, connection) => {
 			if (error) return callback(error, null);
 			if (!connection) return callback("Missing connection.", null);

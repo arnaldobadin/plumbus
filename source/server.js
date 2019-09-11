@@ -6,64 +6,61 @@ const Server = function(port) {
 		throw new Error("Invalid port on Server::Constructor.");
 	}
 
-	this.port = port;
-	this.server = express();
-	this.server.use(/^(?!\/raw-).*/, express.json());
-	this.server.use(helmet());
+	this._port = port;
+	this._server = express();
+	this._server.use(/^(?!\/raw-).*/, express.json());
+	this._server.use(helmet());
 
-	this.status = false;
+	this._status = false;
 }
 
 Server.METHOD = {GET : "GET", POST : "POST"};
 
 Server.prototype.start = function(callback) {
 	callback = callback || (() => {});
-	if (this.status) {
+	if (this._status) {
 		callback("Server already is running.", null);
 		return false;
 	}
 
-	this.status = true;
-	this.server.listen(this.port, () => {callback(null, true);});
+	this._status = true;
+	this._server.listen(this._port, () => {callback(null, "Server started with success.");});
 	return true;
 }
 
 Server.prototype.stop = function(callback) {
 	callback = callback || (() => {});
-	if (this.status) {
+	if (this._status) {
 		callback("Server is not running.", null);
 		return false;
 	}
 
-	this.status = false;
-	this.server.close(() => {callback(null, true);});
+	this._status = false;
+	this._server.close(() => {callback(null, "Server stopped with success.");});
 	return true;
 }
 
-Server.prototype.route = function(method, path, callback) {
-	if (!(method && typeof(method) == "string" && method.length)) {
-		return false;
-	}
-
+Server.prototype.route = function(path, method, callback) {
 	if (!(path && typeof(path) == "string" && path.length)) {
 		return false;
 	}
-
+	if (!(method && typeof(method) == "string" && method.length)) {
+		return false;
+	}
 	if (!(callback && typeof(callback) == "function")) {
 		return false;
 	}
 
 	switch (method) {
 		case Server.METHOD.GET:
-			this.server.get(path, callback);
+			this._server.get(path, callback);
 			break;
 		case Server.METHOD.POST:
-			this.server.post(path, callback);
+			this._server.post(path, callback);
 			break;
 		default:
 			return false;
 	}
-
 	return true;
 }
 

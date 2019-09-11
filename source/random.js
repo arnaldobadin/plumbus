@@ -1,4 +1,4 @@
-const Random = function() {}
+const Random = {};
 
 Random.between = function(min, max) {
 	if (!(min != null && typeof(min) == "number")) return false;

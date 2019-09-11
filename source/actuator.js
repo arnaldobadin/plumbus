@@ -1,5 +1,5 @@
 const Actuator = function() {
-	this.actions = {};
+	this._actions = {};
 }
 
 Actuator.prototype.set = function(name, callback) {
@@ -11,12 +11,12 @@ Actuator.prototype.set = function(name, callback) {
 		return false;
 	}
 
-	this.actions[name] = callback;
+	this._actions[name] = callback;
 	return true;
 }
 
 Actuator.prototype.get = function(name) {
-	return this.actions[name] || false;
+	return this._actions[name] || false;
 }
 
 Actuator.prototype.execute = function(name, ...args) {
