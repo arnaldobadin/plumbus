@@ -23,8 +23,7 @@ Actuator.prototype.execute = function(name, ...args) {
 	const action = this.get(name);
 	if (!action) return false;
 
-	action.apply(this, args);
-	return true;
+	return action.apply(this, args);
 }
 
 module.exports = Actuator;
