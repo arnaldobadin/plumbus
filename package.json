@@ -1,24 +1,24 @@
 {
-  "name": "plumbuzz",
-  "version": "1.0.0",
-  "description": "just whatever you want to this to do.",
-  "main": "plumbus.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/arnaldobadin/plumbus.git"
-  },
-  "author": "Arnaldo Badin",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/arnaldobadin/plumbus/issues"
-  },
-  "homepage": "https://github.com/arnaldobadin/plumbus#readme",
-  "dependencies": {
-    "express": "^4.17.1",
-    "helmet": "^3.21.0",
-    "mysql": "^2.17.1"
-  }
+    "name": "plumbuzz",
+    "version": "1.0.0",
+    "description": "just whatever you want to this to do.",
+    "main": "plumbus.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/arnaldobadin/plumbus.git"
+    },
+    "author": "Arnaldo Badin",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/arnaldobadin/plumbus/issues"
+    },
+    "homepage": "https://github.com/arnaldobadin/plumbus#readme",
+    "dependencies": {
+        "express": "^4.17.1",
+        "helmet": "^3.21.0",
+        "mysql": "^2.17.1"
+    }
 }

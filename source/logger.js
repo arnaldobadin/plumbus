@@ -49,7 +49,7 @@ for (let index in Logger.TYPE) {
 		const now = new Date();
 
 		if (!this._stream) {
-			this._createStream(this._path + this._file + "-" + now + this._extension);
+			this._createStream(this._path + this._file + "-" + now.toISOString() + this._extension);
 		}
 
 		if (!type.hidden) {
@@ -61,7 +61,7 @@ for (let index in Logger.TYPE) {
 			}
 		}
 
-		log = now + " -> " + "[" + type.symbol + "] " + message + "\n";
+		log = now.toISOString() + " -> " + "[" + type.symbol + "] " + message + "\n";
 		return this._stream.write(log);
 	}
 }
