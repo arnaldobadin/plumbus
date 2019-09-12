@@ -1,6 +1,6 @@
 {
     "name": "@arnaldo.badin/plumbus",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "just whatever you want this to do.",
     "main": "plumbus.js",
     "scripts": {
