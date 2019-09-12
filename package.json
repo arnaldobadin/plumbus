@@ -1,7 +1,7 @@
 {
-    "name": "plumbuzz",
-    "version": "1.0.3",
-    "description": "just whatever you want to this to do.",
+    "name": "@arnaldobadin/plumbus",
+    "version": "1.0.4",
+    "description": "just whatever you want this to do.",
     "main": "plumbus.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
