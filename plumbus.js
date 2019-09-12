@@ -9,6 +9,7 @@ const assets = {
     },
     objects : {
         random : require("./source/random.js"),
+        check : require("./source/check.js"),
         sync : require("./source/sync.js"),
         time : require("./source/time.js"),
         token : require("./source/token.js"),

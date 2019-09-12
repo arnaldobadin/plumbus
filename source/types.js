@@ -45,6 +45,12 @@ Types.object = function(value) {
 	return typeof(value) == Types.DATATYPE.OBJECT;
 }
 
+Types.instance = function(value, type) {
+	if (!(value != null && type != null)) return false;
+	if (!Types.string(type)) return false;
+	return value.constructor.name.toLowerCase() == type.toLowerCase();
+}
+
 Types.function = function(value) {
 	if (value == null) return false;
 	return typeof(value) == Types.DATATYPE.FUNCTION;
