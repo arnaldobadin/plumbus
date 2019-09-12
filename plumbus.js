@@ -1,11 +1,11 @@
 const assets = {
     classes : {
-        actuator : require("./source/actuator.js"),
-        chest : require("./source/chest.js"),
-        logger : require("./source/logger.js"),
-        mysql : require("./source/mysql.js"),
-        queue : require("./source/queue.js"),
-        server : require("./source/server.js")
+        Actuator : require("./source/actuator.js"),
+        Chest : require("./source/chest.js"),
+        Logger : require("./source/logger.js"),
+        Mysql : require("./source/mysql.js"),
+        Queue : require("./source/queue.js"),
+        Server : require("./source/server.js")
     },
     objects : {
         random : require("./source/random.js"),
@@ -19,15 +19,11 @@ const assets = {
 
 const Plumbus = {};
 
-for (let k in assets.classes) {
-    Plumbus[k] = (...params) => {
-        return new assets.classes[k](...params);
-    }
-}
-
-for (let k in assets.objects) {
-    Plumbus[k] = () => {
-        return assets.objects[k];
+for (let k in assets) {
+    for (let v in assets[k]) {
+        Plumbus[v] = () => {
+            return assets[k][v];
+        }
     }
 }
 
