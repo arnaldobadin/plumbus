@@ -20,16 +20,14 @@ const assets = {
 const Plumbus = {};
 
 for (let k in assets.classes) {
-    let asset = assets.classes[k];
     Plumbus[k] = (...params) => {
-        return new asset(...params);
+        return new assets.classes[k](...params);
     }
 }
 
 for (let k in assets.objects) {
-    let asset = assets.objects[k];
     Plumbus[k] = () => {
-        return asset;
+        return assets.objects[k];
     }
 }
 
