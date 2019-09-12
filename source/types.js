@@ -1,83 +1,53 @@
 const Types = {};
 
-Types.NUMBER = "number";
-Types.STRING = "string";
-Types.OBJECT = "object";
-Types.ARRAY = "array";
-Types.FUNCTION = "function";
+Types.DATATYPE = {
+	NUMBER : "number", STRING : "string",
+	OBJECT : "object", ARRAY : "array", FUNCTION : "function"
+};
 
-Types.isType = function(value, type) {
-	if (!(value != null && type != null)) return false;
-	return value.constructor.name.toLowerCase() === type.toLowerCase();
-}
-
-Types.isRawType = function(value, type) {
-	if (!(value != null && type != null)) return false;
-	return typeof(value) === type.toLowerCase();
-}
-
-Types.getType = function(value) {
+Types.string = function(value) {
 	if (value == null) return false;
-	return value.constructor.name.toLowerCase();
+	return typeof(value) == Types.DATATYPE.STRING;
 }
 
-Types.isValid = function(value) {
+Types.number = function(value) {
 	if (value == null) return false;
-	
-	const type = Types.getType(value);
-	if (type == Types.NUMBER || type == Types.FUNCTION) return true;
-
-	let length = value.length;
-	if (type == Types.OBJECT) length = Object.keys(value).length;
-
-	if (!length) return false;
-	return true;
-}
-
-Types.isInteger = function(value) {
-	if (!Types.isType(value, Types.NUMBER)) return false;
 	if (isNaN(value)) return false;
-	if (value < 0) return false;
-	return true;
+	return typeof(value) == Types.DATATYPE.NUMBER;
 }
 
-Types.isPort = function(value) {
-	if (!Types.isType(value, Types.NUMBER)) return false;
-	if (isNaN(value)) return false;
-	if (value < 0 || value > 65535) return false;
-	return true;
+Types.bool = function(value) {
+	if (value == null) return false;
+	if (!Types.number(value)) return false;
+	return value >= 0 && value <= 1;
 }
 
-Types.isBool = function(value) {
-	if (!Types.isType(value, Types.NUMBER)) return false;
-	if (isNaN(value)) return false;
-	if (!(value == 0 || value == 1)) return false;
-	return true;
+Types.integer = function(value) {
+	if (value == null) return false;
+	if (!Types.number(value)) return false;
+	return value >= 0;
 }
 
-Types.isComplete = function(object, keys) {
-	if (Types.getType(object) != Types.OBJECT || !(Types.getType(keys) == Types.ARRAY && keys.length)) {
-		return false;
-	}
-
-	for (let key of keys) {
-		if (!Types.isValid(object[key])) {
-			return false;
-		}
-	}
-	return true;
+Types.port = function(value) {
+	if (value == null) return false;
+	if (!Types.number(value)) return false;
+	return value >= 0 && value <= 65535;
 }
 
-Types.isInside = function(list, value) {
-	if (!(Types.isType(list, Types.ARRAY) || Types.isType(list, Types.OBJECT))) return false;
-	if (!Types.isValid(value)) return false;
+Types.array = function(value) {
+	if (value == null) return false;
+	return Array.isArray(value);
+}
 
-	for (let k in list) {
-		let item = list[k];
-		if (value == item) return true;
-	}
+Types.object = function(value) {
+	if (value == null) return false;
+	if (Types.array(value)) return false;
+	return typeof(value) == Types.DATATYPE.OBJECT;
+}
 
-	return false;
+Types.function = function(value) {
+	if (value == null) return false;
+	return typeof(value) == Types.DATATYPE.FUNCTION;
 }
 
 module.exports = Types;
