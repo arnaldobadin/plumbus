@@ -12,7 +12,7 @@ const assets = {
         check : require("./source/check.js"),
         sync : require("./source/sync.js"),
         time : require("./source/time.js"),
-        token : require("./source/token.js"),
+        hash : require("./source/hash.js"),
         types : require("./source/types.js")
     }
 };
