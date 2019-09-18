@@ -2,7 +2,8 @@ const Types = {};
 
 Types.DATATYPE = {
 	NUMBER : "number", STRING : "string",
-	OBJECT : "object", ARRAY : "array", FUNCTION : "function"
+	OBJECT : "object", ARRAY : "array", FUNCTION : "function",
+	ERROR : "error"
 };
 
 Types.string = function(value) {
@@ -54,6 +55,11 @@ Types.instance = function(value, type) {
 Types.function = function(value) {
 	if (value == null) return false;
 	return typeof(value) == Types.DATATYPE.FUNCTION;
+}
+
+Types.error = function(value) {
+	if (value == null) return false;
+	return value.constructor.name.toLowerCase() == Types.DATATYPE.ERROR;
 }
 
 module.exports = Types;
