@@ -14,30 +14,39 @@ const Mysql = function(host, user, password) {
 
 Mysql.prototype.open = function(database, callback) {
 	callback = callback || (() => {});
-
-	if (this._status) return callback("Can't open another pool.", null);
+	if (this._status) {
+		callback("Can't open another pool.", null);
+		return false;
+	}
 	this._status = true;
 
 	if (!(database && typeof(database) == "string" && database.length)) {
-		return callback("Invalid or missing database.", null);
+		callback("Invalid or missing database.", null);
+		return false;
 	}
 
 	this._config.database = database;
 	this._config.connectionLimit = 99;
 
 	this._pool = mysql.createPool(this._config);
-	return callback(null, "Pool created with success.");
+
+	callback(null, "Pool created with success.");
+	return true;
 }
 
 Mysql.prototype.close = function(callback) {
 	callback = callback || (() => {});
-
-	if (!(this._status)) return callback("Can't close an empty pool.", null);;
+	if (!(this._status)) {
+		callback("Can't close an empty pool.", null);;
+		return false;
+	}
 	this._status = false;
 
 	this._config = null;
 	this._pool.end();
-	return callback(null, "Pool closed with success.");
+
+	callback(null, "Pool closed with success.");
+	return true;
 }
 
 Mysql.prototype.schema = function(path, callback) {
