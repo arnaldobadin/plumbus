@@ -37,7 +37,7 @@ Mysql.prototype.open = function(database, callback) {
 Mysql.prototype.close = function(callback) {
 	callback = callback || (() => {});
 	if (!(this._status)) {
-		callback("Can't close an empty pool.", null);;
+		callback("Can't close an empty pool.", null);
 		return false;
 	}
 	this._status = false;
