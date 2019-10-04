@@ -19,6 +19,17 @@ Hash.create = function(length, safe = false) {
     return Hash._generate(Hash.CHARACTER.NORMAL, "sha512", length);
 }
 
+Hash.extract = function(data) {
+    if (!(data && typeof(data) == "string" && data.length)) {
+        return false;
+    }
+
+    const hash = crypto.createHash("sha512");
+    hash.update(data, "utf-8");
+
+    return hash.digest("base64");
+}
+
 Hash._generate = function(characters, code, length) {
     if (!(characters && characters.length && code && code.length && length)) return false;
 
