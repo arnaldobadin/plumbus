@@ -9,44 +9,67 @@ const Mysql = function(host, user, password) {
 	this._config = {host, user, password, multipleStatements : true};
 	this._pool = null;
 
+	this._connected = false;
 	this._status = false;
 }
 
-Mysql.prototype.open = function(database, callback) {
+Mysql.QUERY = {};
+Mysql.QUERY.STATUS = `SELECT 1;`;
+
+Mysql.prototype.connected = function() {
+	return this._connected;
+}
+
+Mysql.prototype.open = async function(database, callback) {
 	callback = callback || (() => {});
 	if (this._status) {
-		callback("Can't open another pool.", null);
-		return false;
+		return callback("Can't open another pool.", null);
 	}
 	this._status = true;
 
 	if (!(database && typeof(database) == "string" && database.length)) {
-		callback("Invalid or missing database.", null);
-		return false;
+		return callback("Invalid or missing database.", null);
 	}
 
 	this._config.database = database;
 	this._config.connectionLimit = 99;
 
 	this._pool = mysql.createPool(this._config);
+	if (!this._pool) {
+		return callback(null, "Failed on creating pool.");
+	}
 
-	callback(null, "Pool created with success.");
-	return true;
+	const status = await new Promise(
+		(resolve, reject) => {
+			return this.query(Mysql.QUERY.STATUS,
+				(error, result) => {
+					return resolve((error && new Error(error)) || result);
+				}
+			);
+		}
+	);
+
+	if (status instanceof Error) {
+		return callback(`Pool failed on connect: ${status}`, null);
+	}
+
+	this._connected = true;
+	return callback(null, "Pool created with success.");
 }
 
 Mysql.prototype.close = function(callback) {
 	callback = callback || (() => {});
 	if (!(this._status)) {
-		callback("Can't close an empty pool.", null);
-		return false;
+		return callback("Can't close an empty pool.", null);
 	}
+
 	this._status = false;
 
 	this._config = null;
 	this._pool.end();
 
-	callback(null, "Pool closed with success.");
-	return true;
+	this._connected = false;
+	return callback(null, "Pool closed with success.");
 }
 
 Mysql.prototype.schema = function(path, callback) {
