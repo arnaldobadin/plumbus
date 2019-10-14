@@ -62,4 +62,10 @@ Types.error = function(value) {
 	return value.constructor.name.toLowerCase() == Types.DATATYPE.ERROR;
 }
 
+Types.date = function(value) {
+	if (value == null) return false;
+	const date = new Date(value);
+	return (value != "Invalid Date" && !isNaN(date));
+}
+
 module.exports = Types;
