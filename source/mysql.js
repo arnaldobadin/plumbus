@@ -20,15 +20,14 @@ Mysql.prototype.connected = function() {
 	return this._connected;
 }
 
-Mysql.prototype.open = async function(database, callback) {
-	callback = callback || (() => {});
+Mysql.prototype.open = async function(database) {
 	if (this._status) {
-		return callback("Can't open another pool.", null);
+		return new Error(`Can't open another pool.`);
 	}
 	this._status = true;
 
 	if (!(database && typeof(database) == "string" && database.length)) {
-		return callback("Invalid or missing database.", null);
+		return new Error(`Invalid or missing database.`);
 	}
 
 	this._config.database = database;
@@ -36,31 +35,32 @@ Mysql.prototype.open = async function(database, callback) {
 
 	this._pool = mysql.createPool(this._config);
 	if (!this._pool) {
-		return callback(null, "Failed on creating pool.");
+		return new Error(`Failed on creating pool.`);
 	}
 
 	const status = await new Promise(
 		(resolve, reject) => {
 			return this.query(Mysql.QUERY.STATUS,
 				(error, result) => {
-					return resolve((error && new Error(error)) || result);
+					return resolve(
+						(error && new Error(error)) || result
+					);
 				}
 			);
 		}
 	);
 
 	if (status instanceof Error) {
-		return callback(`Pool failed on connect: ${status}`, null);
+		return new Error(`Pool failed on connect: ${status}`);
 	}
 
 	this._connected = true;
-	return callback(null, "Pool created with success.");
+	return `Pool created with success.`;
 }
 
-Mysql.prototype.close = function(callback) {
-	callback = callback || (() => {});
+Mysql.prototype.close = async function() {
 	if (!(this._status)) {
-		return callback("Can't close an empty pool.", null);
+		return new Error(`Can't close an empty pool.`);
 	}
 
 	this._status = false;
@@ -69,56 +69,31 @@ Mysql.prototype.close = function(callback) {
 	this._pool.end();
 
 	this._connected = false;
-	return callback(null, "Pool closed with success.");
+	return `Pool closed with success.`;
 }
 
-Mysql.prototype.schema = function(path, callback) {
-	callback = callback || (() => {});
-
-	if (this._status) return callback("Too late to create schema.", null);
-	if (!(path && typeof(path) == "string" && path.length)) {
-		return callback("Missing path.", null);
+Mysql.prototype.query = async function(query) {
+	if (!this._status) return new Error(`Can't query an empty pool.`);
+	if (!(query && typeof(query) == "string" && query.length)) {
+		return new Error(`Missing query.`);
 	}
+	
+	return await new Promise(
+		(resolve, reject) => {
+			return this._pool.getConnection(
+				(error, connection) => {
+					if (error) return resolve(new Error(error));
+					if (!connection) return resolve(
+						new Error(`Can't get a valid connection.`)
+					);
 
-	let schema = fs.readFileSync(path, "utf8");
-
-	if (!(schema && typeof(schema) == "string" && schema.length)) {
-		return callback("Missing schema.", null);
-	}
-
-	let connection = mysql.createConnection(this._config);
-	if (!connection) return callback("Missing connection.", null);
-
-	return connection.connect(
-		(error) => {
-			if (error) return callback(error || "Unknown error", null);
-			return connection.query(schema,
-				(error, result, fields) => {
-					connection.end();
-					if (error) return callback(error, null);
-					return callback(null, result);
-				}
-			);
-		}
-	);
-}
-
-Mysql.prototype.query = function(query, callback) {
-	callback = callback || (() => {});
-
-	if (!this._status) return callback("Can't query an empty pool.", null);
-	if (!query) return callback("Missing query.", null);
-
-	return this._pool.getConnection(
-		(error, connection) => {
-			if (error) return callback(error, null);
-			if (!connection) return callback("Missing connection.", null);
-
-			return connection.query(query,
-				(error, result, fields) => {
-					connection.release();
-					if (error) return callback(error, null);
-					return callback(null, result);
+					return connection.query(query,
+						(error, result, fields) => {
+							connection.release();
+							if (error) return resolve(new Error(error));
+							return resolve(result);
+						}
+					);
 				}
 			);
 		}
