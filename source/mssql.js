@@ -16,22 +16,22 @@ Mssql.prototype.connected = function() {
 	return this._connected;
 }
 
-Mssql.prototype.open = async function(database, callback) {
-	callback = callback || (() => {});
+Mssql.prototype.open = async function(database) {
 	if (this._status) {
-		return callback("Can't open another pool.", null);
+		return new Error(`Can't open another pool.`);
 	}
 	this._status = true;
 
 	if (!(database && typeof(database) == "string" && database.length)) {
-		return callback("Invalid or missing database.", null);
+		return new Error(`Invalid or missing database.`);
 	}
 
 	this._config.database = database;
+	this._config.requestTimeout = 15 * 60 * 1000;
 	this._config.pool = {
-        max : 99,
+		max : 99,
         min : 0,
-        idleTimeoutMillis : 3000
+		idleTimeoutMillis : 3000
     };
 
 	this._pool = new mssql.ConnectionPool(this._config);
@@ -40,18 +40,17 @@ Mssql.prototype.open = async function(database, callback) {
 		try {
 			await this._pool.connect();
 		} catch (error) {
-			return callback(`Pool failed on connect: ${error}`, null);
+			return new Error(`Pool failed on connect: ${error}`);
 		}
     }
 
 	this._connected = true;
-	return callback(null, "Pool created with success.");
+	return `Pool created with success.`;
 }
 
-Mssql.prototype.close = function(callback) {
-	callback = callback || (() => {});
+Mssql.prototype.close = async function() {
 	if (!(this._status)) {
-		return callback("Can't close an empty pool.", null);
+		return new Error(`Can't close an empty pool.`);
 	}
 	this._status = false;
 
@@ -59,22 +58,24 @@ Mssql.prototype.close = function(callback) {
 	this._pool.close();
 
 	this._connected = false;
-	return callback(null, "Pool closed with success.");
+	return `Pool closed with success.`;
 }
 
-Mssql.prototype.query = async function(query, callback) {
-	callback = callback || (() => {});
-
-	if (!this._status) return callback("Can't query an empty pool.", null);
+Mssql.prototype.query = async function(query) {
+	if (!this._status) return new Error(`Can't query an empty pool.`);
 	if (!(query && typeof(query) == "string" && query.length)) {
-		return callback("Invalid/missing query.", null);
+		return new Error(`Invalid/missing query.`);
 	}
 
-    return this._pool.request().query(query,
-		(error, result) => {
-			if (error || !result) return callback(error, null);
-			if (result && !result.recordset) return callback(null, true);
-			return callback(null, result.recordset);
+	return await new Promise(
+		(resolve, reject) => {
+			return this._pool.request().query(query,
+				(error, result) => {
+					if (error || !result) return resolve(new Error(error));
+					if (result && !result.recordset) return resolve(true);
+					return resolve(result.recordset);
+				}
+			);
 		}
 	);
 }
