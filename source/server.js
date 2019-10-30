@@ -20,11 +20,11 @@ Server.prototype.start = async function() {
 	if (this._status) return new Error(`Server already is running.`);
 	this._status = true;
 
-    await new Promise((resolve, reject) => {
-        return this._server.listen(this._port, () => {
-            return resolve(true);
-        });
-    });
+	await new Promise((resolve, reject) => {
+		return this._server.listen(this._port, () => {
+	    		return resolve(true);
+		});
+	});
 
 	return `Server started with success.`
 }
@@ -33,11 +33,11 @@ Server.prototype.stop = async function() {
 	if (this._status) return new Error(`Server is not running.`);
 	this._status = false;
 
-    await new Promise((resolve, reject) => {
-        return this._server.close(() => {
-            return resolve(true);
-        });
-    });
+	await new Promise((resolve, reject) => {
+		return this._server.close(() => {
+			return resolve(true);
+		});
+	});
 
 	return `Server stopped with success.`;
 }
