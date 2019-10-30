@@ -16,28 +16,30 @@ const Server = function(port) {
 
 Server.METHOD = {GET : "GET", POST : "POST"};
 
-Server.prototype.start = function(callback) {
-	callback = callback || (() => {});
-	if (this._status) {
-		callback("Server already is running.", null);
-		return false;
-	}
-
+Server.prototype.start = async function() {
+	if (this._status) return new Error(`Server already is running.`);
 	this._status = true;
-	this._server.listen(this._port, () => {callback(null, "Server started with success.");});
-	return true;
+
+    await new Promise((resolve, reject) => {
+        return this._server.listen(this._port, () => {
+            return resolve(true);
+        });
+    });
+
+	return `Server started with success.`
 }
 
-Server.prototype.stop = function(callback) {
-	callback = callback || (() => {});
-	if (this._status) {
-		callback("Server is not running.", null);
-		return false;
-	}
-
+Server.prototype.stop = async function() {
+	if (this._status) return new Error(`Server is not running.`);
 	this._status = false;
-	this._server.close(() => {callback(null, "Server stopped with success.");});
-	return true;
+
+    await new Promise((resolve, reject) => {
+        return this._server.close(() => {
+            return resolve(true);
+        });
+    });
+
+	return `Server stopped with success.`;
 }
 
 Server.prototype.route = function(path, method, callback) {
