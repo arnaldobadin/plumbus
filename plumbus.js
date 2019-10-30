@@ -13,6 +13,7 @@ const assets = {
         sync : require("./source/sync.js"),
         time : require("./source/time.js"),
         hash : require("./source/hash.js"),
+        watch : require("./source/watch.js"),
         types : require("./source/types.js")
     }
 };
