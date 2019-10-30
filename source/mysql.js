@@ -38,18 +38,7 @@ Mysql.prototype.open = async function(database) {
 		return new Error(`Failed on creating pool.`);
 	}
 
-	const status = await new Promise(
-		(resolve, reject) => {
-			return this.query(Mysql.QUERY.STATUS,
-				(error, result) => {
-					return resolve(
-						(error && new Error(error)) || result
-					);
-				}
-			);
-		}
-	);
-
+	const status = await this.query(Mysql.QUERY.STATUS);
 	if (status instanceof Error) {
 		return new Error(`Pool failed on connect: ${status}`);
 	}
