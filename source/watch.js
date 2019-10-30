@@ -32,7 +32,7 @@ Watch.name = function(name) {
 }
 
 Watch.output = function(output) {
-    if (!(name != null && typeof(name) == "function")) {
+    if (!(output != null && typeof(output) == "function")) {
         return false;
     }
     return Watch.OUTPUT = output;
@@ -43,13 +43,13 @@ for (let index in Watch.TYPE) {
 	if (!type) continue;
 
 	Watch[index.toLowerCase()] = function(message) {
-        if (!types.string(message)) return false;
+        if (!(message != null && typeof(message) == "string" && message.length)) {
+            return false;
+        }
 		const now = new Date();
         const log = `${type.COLOR}[${type.SYMBOL}] ${message} ${Watch.COLOR.RESET}`
 
-        if (type.WRITE && types.string(Watch.NAME) && types.function(Watch.OUTPUT)) {
-            Watch.OUTPUT(`[${Watch.NAME}] ${message}`);
-        }
+        if (type.WRITE) Watch.OUTPUT(`[${Watch.NAME}] ${message}`);
 
         console.log(log);
         return true;
