@@ -26,7 +26,13 @@ Types.bool = function(value) {
 Types.integer = function(value) {
 	if (value == null) return false;
 	if (!Types.number(value)) return false;
-	return value >= 0;
+	return (value % 1) === 0;
+}
+
+Types.float = function(value) {
+	if (value == null) return false;
+	if (!Types.number(value)) return false;
+	return (value % 1) !== 0;
 }
 
 Types.port = function(value) {
