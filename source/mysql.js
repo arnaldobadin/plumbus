@@ -21,9 +21,7 @@ Mysql.prototype.connected = function() {
 }
 
 Mysql.prototype.open = async function(database) {
-	if (this._status) {
-		return new Error(`Can't open another pool.`);
-	}
+	if (this._status) return new Error(`Can't open another pool.`);
 	this._status = true;
 
 	if (!(database && typeof(database) == "string" && database.length)) {
@@ -34,24 +32,17 @@ Mysql.prototype.open = async function(database) {
 	this._config.connectionLimit = 99;
 
 	this._pool = mysql.createPool(this._config);
-	if (!this._pool) {
-		return new Error(`Failed on creating pool.`);
-	}
+	if (!this._pool) return new Error(`Failed on creating pool.`);
 
 	const status = await this.query(Mysql.QUERY.STATUS);
-	if (status instanceof Error) {
-		return new Error(`Pool failed on connect: ${status}`);
-	}
+	if (status instanceof Error) return new Error(`Pool failed on connect: ${status}`);
 
 	this._connected = true;
 	return `Pool created with success.`;
 }
 
 Mysql.prototype.close = async function() {
-	if (!(this._status)) {
-		return new Error(`Can't close an empty pool.`);
-	}
-
+	if (!(this._status)) return new Error(`Can't close an empty pool.`);
 	this._status = false;
 
 	this._config = null;
@@ -67,26 +58,20 @@ Mysql.prototype.query = async function(query) {
 		return new Error(`Missing query.`);
 	}
 	
-	return await new Promise(
-		(resolve, reject) => {
-			return this._pool.getConnection(
-				(error, connection) => {
-					if (error) return resolve(new Error(error));
-					if (!connection) return resolve(
-						new Error(`Can't get a valid connection.`)
-					);
+	return await new Promise((resolve, reject) => {
+        return this._pool.getConnection((error, connection) => {
+            if (error) return resolve(new Error(error));
+            if (!connection) return resolve(
+                new Error(`Can't get a valid connection.`)
+            );
 
-					return connection.query(query,
-						(error, result, fields) => {
-							connection.release();
-							if (error) return resolve(new Error(error));
-							return resolve(result);
-						}
-					);
-				}
-			);
-		}
-	);
+            return connection.query(query, (error, result, fields) => {
+                connection.release();
+                if (error) return resolve(new Error(error));
+                return resolve(result);
+            });
+        });
+    });
 }
 
 module.exports = Mysql;
