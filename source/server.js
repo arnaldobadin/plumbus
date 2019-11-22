@@ -1,5 +1,7 @@
+/* going to be moved to fame hall */
 const express = require("express");
 const helmet = require("helmet");
+const Enumerator = require("./enumerator.js");
 
 const Server = function(port) {
 	if (!(port && typeof(port) == "number" && port > 0 && port <= 65535)) {
@@ -14,7 +16,9 @@ const Server = function(port) {
 	this._status = false;
 }
 
-Server.METHOD = {GET : "GET", POST : "POST"};
+Server.METHOD = new Enumerator(
+	{GET : "get", POST : "post"}
+);
 
 Server.prototype.start = async function() {
 	if (this._status) throw new Error(`Server already is running.`);
