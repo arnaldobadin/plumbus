@@ -46,9 +46,8 @@ for (let index in Watch.TYPE) {
         if (!(message != null && typeof(message) == "string" && message.length)) {
             return false;
         }
-		const now = new Date();
-        const log = `${type.COLOR}[${type.SYMBOL}] ${message} ${Watch.COLOR.RESET}`
 
+        const log = `${type.COLOR}[${type.SYMBOL}] ${message} ${Watch.COLOR.RESET}`
         if (type.WRITE) Watch.OUTPUT(`[${Watch.NAME}] ${message}`);
 
         console.log(log);
