@@ -17,11 +17,11 @@ Mssql.prototype.connected = function() {
 }
 
 Mssql.prototype.open = async function(database) {
-	if (this._status) return new Error(`Can't open another pool.`);
+	if (this._status) throw new Error(`Can't open another pool.`);
 	this._status = true;
 
 	if (!(database && typeof(database) == "string" && database.length)) {
-		return new Error(`Invalid or missing database.`);
+		throw new Error(`Invalid or missing database.`);
 	}
 
 	this._config.database = database;
@@ -31,7 +31,7 @@ Mssql.prototype.open = async function(database) {
 	this._pool = new mssql.ConnectionPool(this._config);
 	if (!this._pool._connected) {
 		try {await this._pool.connect();}
-        catch (error) {return new Error(`Pool failed on connect: ${error}`);}
+        catch (error) {throw new Error(`Pool failed on connect: '${error}'`);}
     }
 
 	this._connected = true;
@@ -39,7 +39,7 @@ Mssql.prototype.open = async function(database) {
 }
 
 Mssql.prototype.close = async function() {
-	if (!(this._status)) return new Error(`Can't close an empty pool.`);
+	if (!(this._status)) throw new Error(`Can't close an empty pool.`);
 	this._status = false;
 
 	this._config = null;
@@ -50,14 +50,14 @@ Mssql.prototype.close = async function() {
 }
 
 Mssql.prototype.query = async function(query) {
-	if (!this._status) return new Error(`Can't query an empty pool.`);
+	if (!this._status) throw new Error(`Can't query an empty pool.`);
 	if (!(query && typeof(query) == "string" && query.length)) {
-		return new Error(`Invalid/missing query.`);
+		throw new Error(`Invalid/missing query.`);
 	}
     
 	return await new Promise((resolve, reject) => {
         return this._pool.request().query(query, (error, result) => {
-            if (error || !result) return resolve(new Error(error));
+            if (error || !result) return reject(new Error(error));
             if (result && !result.recordset) return resolve(true);
             return resolve(result.recordset);
         });
