@@ -43,9 +43,14 @@ const Instance = function() {
 Instance.prototype.getMap = function() {return this._map;}
 Instance.prototype.getInterface = function() {return this._interface;}
 
-const Generator = function() {
+const Generator = function(options) {
     const instance = new Instance();
-    return instance.getInterface();
+    const interface = instance.getInterface();
+
+    for (let k in options) {
+        interface.set(k, options[k]);
+    }
+    return interface;
 }
 
 module.exports = Generator;
