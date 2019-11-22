@@ -3,7 +3,7 @@ const Types = {};
 Types.DATATYPE = {
 	NUMBER : "number", STRING : "string",
 	OBJECT : "object", ARRAY : "array", FUNCTION : "function",
-	ERROR : "error"
+	ERROR : "error", SYMBOL : "symbol"
 };
 
 Types.string = function(value) {
@@ -61,6 +61,11 @@ Types.instance = function(value, type) {
 Types.function = function(value) {
 	if (value == null) return false;
 	return typeof(value) == Types.DATATYPE.FUNCTION;
+}
+
+Types.symbol = function(value) {
+	if (value == null) return false;
+	return typeof(value) == Types.DATATYPE.SYMBOL;
 }
 
 Types.error = function(value) {
