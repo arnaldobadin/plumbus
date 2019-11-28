@@ -16,16 +16,16 @@ Watch.COLOR = {
 };
 
 Watch.TYPE = {
-	INFO : {SYMBOL : "^", COLOR : Watch.COLOR.FGWHITE},
-	WARNING : {SYMBOL : "!", COLOR : Watch.COLOR.FGYELLOW},
-	EVENT : {SYMBOL : "#", COLOR : Watch.COLOR.FGYELLOW},
-	DEBUG : {SYMBOL : "$", COLOR : Watch.COLOR.FGRED},
-	IN : {SYMBOL : ">", COLOR : Watch.COLOR.FGCYAN},
-	OUT : {SYMBOL : "<", COLOR : Watch.COLOR.FGMAGENTA},
-	ERROR : {SYMBOL : "*", COLOR : Watch.COLOR.FGRED},
-	FAIL : {SYMBOL : "-", COLOR : Watch.COLOR.FGRED},
-	SUCCESS : {SYMBOL : "+", COLOR : Watch.COLOR.FGGREEN},
-	LOG : {SYMBOL : "x", COLOR : Watch.COLOR.FGWHITE}
+    INFO : {SYMBOL : "^", COLOR : Watch.COLOR.FGWHITE},
+    WARNING : {SYMBOL : "!", COLOR : Watch.COLOR.FGYELLOW},
+    EVENT : {SYMBOL : "#", COLOR : Watch.COLOR.FGYELLOW},
+    DEBUG : {SYMBOL : "$", COLOR : Watch.COLOR.FGRED},
+    IN : {SYMBOL : ">", COLOR : Watch.COLOR.FGCYAN},
+    OUT : {SYMBOL : "<", COLOR : Watch.COLOR.FGMAGENTA},
+    ERROR : {SYMBOL : "*", COLOR : Watch.COLOR.FGRED},
+    FAIL : {SYMBOL : "-", COLOR : Watch.COLOR.FGRED},
+    SUCCESS : {SYMBOL : "+", COLOR : Watch.COLOR.FGGREEN},
+    LOG : {SYMBOL : "x", COLOR : Watch.COLOR.FGWHITE}
 };
 
 Watch.name = function(name) {
@@ -48,12 +48,12 @@ Watch.output = function(output) {
 }
 
 for (let index in Watch.TYPE) {
-	const type = Watch.TYPE[index];
-    
+    const type = Watch.TYPE[index];
+
     const name = index.toLowerCase();
     if (Watch[name]) continue;
 
-	Watch[name] = function(message) {
+    Watch[name] = function(message) {
         if (!(message != null && typeof(message) == "string" && message.length)) {
             return false;
         }
@@ -63,7 +63,7 @@ for (let index in Watch.TYPE) {
 
         if (!Watch._silent) console.log(log);
         return true;
-	}
+    }
 }
 
 module.exports = Watch;
