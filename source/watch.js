@@ -1,4 +1,8 @@
-const Watch = {};
+const Watch = {
+    _name : "None",
+    _silent : false,
+    _output : null
+};
 
 Watch.COLOR = {
     RESET : "\x1b[0m", BRIGHT : "\x1b[1m", DIM : "\x1b[2m", UNDERSCORE : "\x1b[4m",
@@ -18,7 +22,7 @@ Watch.TYPE = {
 	DEBUG : {SYMBOL : "$", COLOR : Watch.COLOR.FGRED},
 	IN : {SYMBOL : ">", COLOR : Watch.COLOR.FGCYAN},
 	OUT : {SYMBOL : "<", COLOR : Watch.COLOR.FGMAGENTA},
-	ERROR : {SYMBOL : "*", COLOR : Watch.COLOR.FGRED, WRITE : true},
+	ERROR : {SYMBOL : "*", COLOR : Watch.COLOR.FGRED},
 	FAIL : {SYMBOL : "-", COLOR : Watch.COLOR.FGRED},
 	SUCCESS : {SYMBOL : "+", COLOR : Watch.COLOR.FGGREEN},
 	LOG : {SYMBOL : "x", COLOR : Watch.COLOR.FGWHITE}
@@ -28,29 +32,36 @@ Watch.name = function(name) {
     if (!(name != null && typeof(name) == "string" && name.length)) {
         return false;
     }
-    return Watch.NAME = name;
+    return Watch._name = name;
+}
+
+Watch.silent = function(silent) {
+    if (!silent) return false;
+    return Watch._silent = true;
 }
 
 Watch.output = function(output) {
     if (!(output != null && typeof(output) == "function")) {
         return false;
     }
-    return Watch.OUTPUT = output;
+    return Watch._output = output;
 }
 
 for (let index in Watch.TYPE) {
 	const type = Watch.TYPE[index];
-	if (!type) continue;
+    
+    const name = index.toLowerCase();
+    if (Watch[name]) continue;
 
-	Watch[index.toLowerCase()] = function(message) {
+	Watch[name] = function(message) {
         if (!(message != null && typeof(message) == "string" && message.length)) {
             return false;
         }
 
-        const log = `${type.COLOR}[${type.SYMBOL}] ${message} ${Watch.COLOR.RESET}`
-        if (type.WRITE) Watch.OUTPUT(`[${Watch.NAME}] ${message}`);
+        const log = `${type.COLOR}[${type.SYMBOL}] ${message} ${Watch.COLOR.RESET}`;
+        Watch._output(Watch._name, message);
 
-        console.log(log);
+        if (!Watch._silent) console.log(log);
         return true;
 	}
 }
