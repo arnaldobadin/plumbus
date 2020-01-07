@@ -54,7 +54,7 @@ Types.object = function(value) {
 
 Types.instance = function(value, type) {
 	if (!(value != null && type != null)) return false;
-	if (!Types.string(type)) return false;
+	if (!Types.string(type)) return value instanceof type;
 	return value.constructor.name.toLowerCase() == type.toLowerCase();
 }
 
