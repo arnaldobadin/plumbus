@@ -35,6 +35,21 @@ Interface.prototype.match = function(value) {
     return false;
 }
 
+Interface.prototype.join = function(delim) {
+    if (delim && typeof(delim) != "string") return false;
+    delim = delim || "";
+
+    const result = [];
+    for (let k in this._map) {
+        result.push(this._map[k]);
+    }
+    return result.join(delim);
+}
+
+Interface.prototype.entries = function() {
+    return Object.entries(this._map);
+}
+
 const Instance = function() {
     this._map = {};
     this._interface = new Interface(this._map);
