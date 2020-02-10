@@ -26,6 +26,7 @@ Mssql.prototype.open = async function(database) {
 
 	this._config.database = database;
 	this._config.requestTimeout = 15 * 60 * 1000;
+	this._config.options = {enableArithAbort : true};
 	this._config.pool = {max : 99, min : 0, idleTimeoutMillis : 3000};
 
 	this._pool = new mssql.ConnectionPool(this._config);
