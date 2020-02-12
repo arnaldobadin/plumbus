@@ -1,82 +1,61 @@
 const Types = {};
 
 Types.DATATYPE = {
-	NUMBER : "number", STRING : "string",
-	OBJECT : "object", ARRAY : "array", FUNCTION : "function",
-	ERROR : "error", SYMBOL : "symbol"
+	NUMBER : "number", STRING : "string", OBJECT : "object",
+    ARRAY : "array", FUNCTION : "function", ERROR : "error",
+    SYMBOL : "symbol"
 };
 
 Types.string = function(value) {
-	if (value == null) return false;
-	return typeof(value) == Types.DATATYPE.STRING;
+	return typeof(value) === Types.DATATYPE.STRING || value instanceof String;
 }
 
 Types.number = function(value) {
-	if (value == null) return false;
-	if (isNaN(value)) return false;
-	return typeof(value) == Types.DATATYPE.NUMBER;
+	return typeof(value) === Types.DATATYPE.NUMBER && Number.isFinite(value);
 }
 
 Types.bool = function(value) {
-	if (value == null) return false;
-	if (!Types.number(value)) return false;
-	return value >= 0 && value <= 1;
+	return Types.number(value) && (value === 0 || value === 1);
 }
 
 Types.integer = function(value) {
-	if (value == null) return false;
-	if (!Types.number(value)) return false;
-	return (value % 1) === 0;
+	return Types.number(value) && Number.isInteger(value);
 }
 
 Types.float = function(value) {
-	if (value == null) return false;
-	if (!Types.number(value)) return false;
-	return (value % 1) !== 0;
+	return Types.number(value) && ((value % 1) !== 0);
 }
 
 Types.port = function(value) {
-	if (value == null) return false;
-	if (!Types.number(value)) return false;
-	return value >= 0 && value <= 65535;
+	return Types.number(value) && (value >= 0 && value <= 65535);
 }
 
 Types.array = function(value) {
-	if (value == null) return false;
-	return Array.isArray(value);
+	return value != null && typeof(value) === Types.DATATYPE.OBJECT && value.constructor === Array;
 }
 
 Types.object = function(value) {
-	if (value == null) return false;
-	if (Types.array(value)) return false;
-	return typeof(value) == Types.DATATYPE.OBJECT;
-}
-
-Types.instance = function(value, type) {
-	if (!(value != null && type != null)) return false;
-	if (!Types.string(type)) return value instanceof type;
-	return value.constructor.name.toLowerCase() == type.toLowerCase();
+	return value != null && typeof(value) === Types.DATATYPE.OBJECT && value.constructor === Object;
 }
 
 Types.function = function(value) {
-	if (value == null) return false;
-	return typeof(value) == Types.DATATYPE.FUNCTION;
+	return typeof(value) === Types.DATATYPE.FUNCTION;
 }
 
 Types.symbol = function(value) {
-	if (value == null) return false;
 	return typeof(value) == Types.DATATYPE.SYMBOL;
 }
 
 Types.error = function(value) {
-	if (value == null) return false;
-	return value.constructor.name.toLowerCase() == Types.DATATYPE.ERROR;
+	return value instanceof Error;
 }
 
 Types.date = function(value) {
-	if (value == null) return false;
-	const date = new Date(value);
-	return (value != "Invalid Date" && !isNaN(date));
+	return value instanceof Date;
+}
+
+Types.instance = function(value, type) {
+    return (value != null && type != null) && ((typeof(type) === Types.DATATYPE.FUNCTION && value.constructor === type) || value.constructor.name === type);
 }
 
 module.exports = Types;
