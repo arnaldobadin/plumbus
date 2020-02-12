@@ -2,8 +2,8 @@ const Types = {};
 
 Types.DATATYPE = {
 	NUMBER : "number", STRING : "string", OBJECT : "object",
-    ARRAY : "array", FUNCTION : "function", ERROR : "error",
-    SYMBOL : "symbol"
+    	ARRAY : "array", FUNCTION : "function", ERROR : "error",
+    	SYMBOL : "symbol"
 };
 
 Types.string = function(value) {
