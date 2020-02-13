@@ -3,19 +3,19 @@ const Types = {};
 Types.DATATYPE = {
     NUMBER : "number", STRING : "string", OBJECT : "object",
     ARRAY : "array", FUNCTION : "function", ERROR : "error",
-    SYMBOL : "symbol"
+    SYMBOL : "symbol", BOOLEAN : "boolean"
 };
 
 Types.string = function(value) {
     return typeof(value) === Types.DATATYPE.STRING || value instanceof String;
 }
 
-Types.number = function(value) {
-    return typeof(value) === Types.DATATYPE.NUMBER && Number.isFinite(value);
+Types.bool = function(value) {
+    return typeof(value) == Types.DATATYPE.BOOLEAN;
 }
 
-Types.bool = function(value) {
-    return Types.number(value) && (value === 0 || value === 1);
+Types.number = function(value) {
+    return typeof(value) === Types.DATATYPE.NUMBER && Number.isFinite(value);
 }
 
 Types.integer = function(value) {
