@@ -1,4 +1,5 @@
 const mssql = require("mssql");
+const fs = require("fs");
 
 const Mssql = function(host, user, password) {
 	if (!(host && typeof(host) == "string" && host.length)) throw new Error("Missing host on Mssql::Constructor.");
@@ -57,12 +58,42 @@ Mssql.prototype.query = async function(query) {
 	}
     
 	return await new Promise((resolve, reject) => {
-        return this._pool.request().query(query, (error, result) => {
+		const request = this._pool.request();
+        return request.query(query, (error, result) => {
             if (error || !result) return reject(new Error(error));
             if (result && !result.recordset) return resolve(true);
             return resolve(result.recordset);
         });
     });
+}
+
+Mssql.prototype.queryStream = async function(query, stream) {
+	if (!this._status) throw new Error(`Can't query an empty pool.`);
+	if (!(query && typeof(query) == "string" && query.length)) {
+		throw new Error(`Invalid/missing query.`);
+	}
+	if (!stream instanceof fs.WriteStream) {
+		throw new Error("Invalid or missing fs.WriteStream instance");
+	}
+
+	const request = this._pool.request();
+	request.stream = true;
+	request.query(query);
+
+	let count = 0;
+	request.on("row", (row) => {
+		count++;
+		stream.write(JSON.stringify(row) + "\n");
+	});
+
+	return new Promise((resolve, reject) => {
+		request.on("error", (error) => {reject(error);});
+		request.on("done", (result) => {
+			stream.end();
+			request.stream = false;
+			resolve(count);
+		});
+	});
 }
 
 module.exports = Mssql;
