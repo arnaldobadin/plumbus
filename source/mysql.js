@@ -1,4 +1,5 @@
 const mysql = require("mysql");
+const fs = require("fs");
 
 const Mysql = function(host, user, password) {
 	if (!(host && typeof(host) == "string" && host.length)) throw new Error("Missing host on Mysql::Constructor.");
@@ -71,6 +72,43 @@ Mysql.prototype.query = async function(query) {
             });
         });
     });
+}
+
+Mysql.prototype.queryStream = async function(query, stream) {
+	if (!this._status) throw new Error(`Can't query an empty pool.`);
+	if (!(query && typeof(query) == "string" && query.length)) {
+		throw new Error(`Invalid/missing query.`);
+	}
+	if (!stream instanceof fs.WriteStream) {
+		throw new Error("Invalid or missing fs.WriteStream instance");
+	}
+
+	const request = await new Promise((resolve, reject) => {
+		this._pool.getConnection((error, connection) => {
+			if (error) return reject(new Error(error));
+			if (!connection) return reject(
+				new Error(`Can't get a valid connection.`)
+			);
+			return resolve(connection);
+		});
+	});
+
+	const receiver = request.query(query);
+
+	let count = 0;
+	receiver.on("result", (row) => {
+		count++;
+		stream.write(JSON.stringify(row) + "\n");
+	});
+
+	return new Promise((resolve, reject) => {
+		receiver.on("error", (error) => {reject(error);});
+		receiver.on("end", () => {
+			stream.end();
+			request.release();
+			resolve(count);
+		});
+	});
 }
 
 module.exports = Mysql;
