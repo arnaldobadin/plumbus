@@ -5,7 +5,7 @@ const assets = {
         Logger : require("./source/logger.js"),
         Mysql : require("./source/mysql.js"),
         Queue : require("./source/queue.js"),
-        Server : require("./source/server.js")
+        ReadLine : require("./source/read-line.js")
     },
     objects : {
         random : require("./source/random.js"),
