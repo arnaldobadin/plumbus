@@ -42,21 +42,24 @@ ReadLine.prototype[Symbol.asyncIterator] = function() {
 
     _data = "";
     _eol_index = -1;
+    _done = false;
 
     const next = async () => {
-        if (_eol_index < 0) {
+        if (_done) return {done : true};
+        
+        while ((_eol_index = _data.indexOf("\n")) < 0) {
             const {done, value} = await _iterator.next();
-            if (done) return {done : true};
+            if (done) {
+                _done = true;
+                return {done : false, value : _data};
+            }
 
             _data += value;
         }
 
-        if ((_eol_index = _data.indexOf("\n")) >= 0) {
-            const line = _data.slice(0, _eol_index);
-            _data = _data.slice(_eol_index + 1);
-            return {done : false, value : line};
-        }
-        return {done : false, value : _data};
+        const line = _data.slice(0, _eol_index);
+        _data = _data.slice(_eol_index + 1);
+        return {done : false, value : line};
     }
 
     return {next};
