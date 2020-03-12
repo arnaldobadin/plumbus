@@ -1,10 +1,10 @@
 const mssql = require("mssql");
 const fs = require("fs");
 
-const Mssql = function(host, user, password) {
-	if (!(host && typeof(host) == "string" && host.length)) throw new Error("Missing host on Mssql::Constructor.");
-	if (!(user && typeof(user) == "string" && user.length)) throw new Error("Missing user on Mssql::Constructor.");
-	if (!(password && typeof(password) == "string" && password.length)) throw new Error("Missing password on Mssql::Constructor.");
+const Client = function(host, user, password) {
+	if (!(host && typeof(host) == "string" && host.length)) throw new Error("Missing host on Client::Constructor");
+	if (!(user && typeof(user) == "string" && user.length)) throw new Error("Missing user on Client::Constructor");
+	if (!(password && typeof(password) == "string" && password.length)) throw new Error("Missing password on Client::Constructor");
 
 	this._config = {server : host, user, password};
 	this._pool = null;
@@ -13,16 +13,16 @@ const Mssql = function(host, user, password) {
 	this._status = false;
 }
 
-Mssql.prototype.connected = function() {
+Client.prototype.connected = function() {
 	return this._connected;
 }
 
-Mssql.prototype.open = async function(database) {
-	if (this._status) throw new Error(`Can't open another pool.`);
+Client.prototype.open = async function(database) {
+	if (this._status) throw new Error(`Can't open another pool`);
 	this._status = true;
 
 	if (!(database && typeof(database) == "string" && database.length)) {
-		throw new Error(`Invalid or missing database.`);
+		throw new Error(`Invalid or missing database`);
 	}
 
 	this._config.database = database;
@@ -37,24 +37,24 @@ Mssql.prototype.open = async function(database) {
     }
 
 	this._connected = true;
-	return `Pool created with success.`;
+	return `Pool created with success`;
 }
 
-Mssql.prototype.close = async function() {
-	if (!(this._status)) throw new Error(`Can't close an empty pool.`);
+Client.prototype.close = async function() {
+	if (!(this._status)) throw new Error(`Can't close an empty pool`);
 	this._status = false;
 
 	this._config = null;
 	this._pool.close();
 
 	this._connected = false;
-	return `Pool closed with success.`;
+	return `Pool closed with success`;
 }
 
-Mssql.prototype.query = async function(query) {
-	if (!this._status) throw new Error(`Can't query an empty pool.`);
+Client.prototype.query = async function(query) {
+	if (!this._status) throw new Error(`Can't query an empty pool`);
 	if (!(query && typeof(query) == "string" && query.length)) {
-		throw new Error(`Invalid/missing query.`);
+		throw new Error(`Invalid/missing query`);
 	}
     
 	return await new Promise((resolve, reject) => {
@@ -67,8 +67,24 @@ Mssql.prototype.query = async function(query) {
     });
 }
 
-Mssql.prototype.queryStream = async function(query, stream) {
-	if (!this._status) throw new Error(`Can't query an empty pool.`);
+Client.prototype.bulk = async function(table) {
+	if (!this._status) throw new Error(`Can't query an empty pool`);
+	if (!(table instanceof mssql.Table)) {
+		throw new Error(`Invalid/missing mssql.Table instance`);
+	}
+
+	return await new Promise((resolve, reject) => {
+		const request = this._pool.request();
+        return request.bulk(table, (error, result) => {
+            if (error || !result) return reject(new Error(error));
+            if (result && !result.recordset) return resolve(true);
+            return resolve(result.recordset);
+        });
+    });
+}
+
+Client.prototype.stream = async function(query, stream) {
+	if (!this._status) throw new Error(`Can't query an empty pool`);
 	if (!(query && typeof(query) == "string" && query.length)) {
 		throw new Error(`Invalid/missing query.`);
 	}
@@ -96,4 +112,6 @@ Mssql.prototype.queryStream = async function(query, stream) {
 	});
 }
 
-module.exports = Mssql;
+module.exports = {
+	Client, Table : mssql.Table, TYPES : mssql.TYPES
+};
