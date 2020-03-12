@@ -74,7 +74,7 @@ Mysql.prototype.query = async function(query) {
     });
 }
 
-Mysql.prototype.queryStream = async function(query, stream) {
+Mysql.prototype.stream = async function(query, stream) {
 	if (!this._status) throw new Error(`Can't query an empty pool.`);
 	if (!(query && typeof(query) == "string" && query.length)) {
 		throw new Error(`Invalid/missing query.`);
