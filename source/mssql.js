@@ -113,5 +113,5 @@ Client.prototype.stream = async function(query, stream) {
 }
 
 module.exports = {
-	Client, Table : mssql.Table, TYPES : mssql.TYPES
+	Client, Table : mssql.Table, TYPE : mssql.TYPES, ENUM : {MAX : mssql.MAX}
 };
