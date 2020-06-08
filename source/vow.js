@@ -14,19 +14,16 @@ Vow.promise = function(callback) {
     return Vow.handle(new Promise((resolve, reject) => {return callback(resolve, reject);}));
 }
 
-Vow.signal = function() {
-    const signal = {_promise: null, _resolve: null};
-    signal.wait = function() {
-        if (this._promise || this._resolve) return false;
-        return this._promise = new Promise((resolve, reject) => { 
-            this._resolve = resolve;
-        });
-    };
-    signal.send = function() {
-        if (!(this._promise && this._resolve)) return false;
-        return this._resolve();
-    };
-    return signal;
+Vow.lock = function() {
+    const lock = {};
+    lock._promise = new Promise((resolve, reject) => {
+        lock._resolve = resolve;
+        lock._reject = reject;
+    });
+
+    lock.wait = () => lock._promise;
+    lock.release = () => lock._resolve();
+    return lock;
 }
 
 module.exports = Vow;
